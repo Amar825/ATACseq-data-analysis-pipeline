@@ -62,3 +62,31 @@ Once downloaded, generate a sample list with:
   ls SRR*gz | cut -f 1 -d "_" | sort | uniq > sample_ids.txt
 ```
 This list will be used for looping through all samples in later steps (trimming, mapping, etc.).
+
+### 2. Quality Control
+Before proceeding with alignment and peak calling, we performed quality control to assess the integrity of the raw FASTQ files. This step ensures that only high-quality sequencing data is carried forward.
+
+### Tools Used
+
+- `FastQC` v0.11.9: evaluates per-base quality, GC content, duplication rates, and adapter contamination
+- `MultiQC` v1.12: aggregates individual FastQC reports into a single summary report
+
+First, create a directory to store FastQC output:
+
+```bash
+mkdir fastqc_initial
+```
+Then run FastQC on all downloaded raw reads
+```bash
+fastqc -t 2 *.fastq.gz -o fastqc_initial
+```
+Each FASTQ file will produce an `.html` and `.zip` output in the `fastqc_initial/` directory.
+
+To aggregate all FastQC results, run MultiQC:
+```bash
+  cd fastqc_initial
+multiqc .
+```
+
+
+
