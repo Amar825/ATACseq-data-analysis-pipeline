@@ -87,6 +87,16 @@ To aggregate all FastQC results, run MultiQC:
   cd fastqc_initial
 multiqc .
 ```
+![MultiQC General Statistics](readme_files/general_stat.png)
+- The **number of sequencing reads** per sample is consistent, with each having approximately 30 million reads in each direction (paired-end).
+- **Duplication percentages** are relatively high, which is expected in ATAC-seq datasets due to the enrichment of short, open chromatin regions. These duplication artifacts are mostly PCR-derived and will be removed in a later step.
+- **GC content** is around 39–40%, which is within the expected range for *S. cerevisiae* and *S. uvarum*. This indicates that the dataset is not contaminated and base composition is consistent across samples.
 
+![Adapter Content](readme_files/adaptercontent.png)
+- Adapter contamination begins roughly midway through the reads, which is typical for transposase-based protocols like ATAC-seq.
+- Although the adapter signal is low, it is consistently present across all samples.
+- These adapters must be trimmed to avoid misleading read alignments and false peak detection in downstream analyses.
+
+Trimming will be performed in the next step to remove these sequences and improve overall read quality.
 
 
