@@ -130,4 +130,70 @@ multiqc .
 - Adapter contamination was fully eliminated.
 - Read length and base quality distributions improved across the board.
 
+## Mapping & Related Analyses
+This step covers reference genome preparation, read alignment, and post-processing steps such as deduplication and filtering.
+
+---
+
+### Reference Genome Setup
+
+We used reference genomes for *S. cerevisiae* and *S. uvarum*, and constructed a hybrid reference genome by concatenating the two. To mask ribosomal regions in *S. cerevisiae*, the following was done:
+
+```bash
+# Download S. cerevisiae genome and annotation
+wget http://ftp.ensembl.org/pub/release-106/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz
+wget http://ftp.ensembl.org/pub/release-106/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.106.gtf.gz
+gunzip Saccharomyces_cerevisiae.R64-1-1.*
+
+# Mask rRNA on chromosome XII
+bedtools maskfasta -fi Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa -bed mask_rRNA.bed -fo S_cerevisiae_masked_rRNA.fasta
+
+# Get S. uvarum genome and combine into hybrid
+wget http://www.saccharomycessensustricto.org/current/Sbay/Sbay.ultrascaf
+wget http://www.saccharomycessensustricto.org/current/Sbay/Sbay.unplaced
+cat Sbay.ultrascaf Sbay.unplaced > S_uvarum.fasta
+cat S_cerevisiae_masked_rRNA.fasta S_uvarum.fasta > hybrid.fasta
+```
+### Indexing Genomes with BWA
+bwa index -p SC S_cerevisiae_masked_rRNA.fasta
+bwa index -p hybrid hybrid.fasta
+
+### Read Mapping
+Each sample was mapped to either the S. cerevisiae or hybrid genome using BWA MEM. Output BAM files were sorted and indexed with SAMtools. A Bash script was used:
+bash map_sort_index_stat.sh > map_sort_index_stat_commands.txt
+bash map_sort_index_stat_commands.txt
+The script determined which genome to use per sample:
+```bash
+while read sample; do
+  if [ "$sample" == SRR10261591 ] || [ "$sample" == SRR10261592 ] || [ "$sample" == SRR10261593 ]; then
+    ref_gen=SC
+  else
+    ref_gen=hybrid
+  fi
+
+  echo "bwa mem -t 2 ./ref_gen/${ref_gen} ../raw_data/trimming/${sample}_tr_1P.fastq.gz ../raw_data/trimming/${sample}_tr_2P.fastq.gz | samtools sort -@2 -o ${sample}.bam -" \
+       "&& samtools index ${sample}.bam" \
+       "&& samtools flagstat ${sample}.bam > ${sample}_map_stats.txt"
+done < ../raw_data/sample_ids.txt
+```
+### Post-mapping Processing
+After mapping, the BAM files were filtered to:
+
+-Keep only S. cerevisiae chromosomes
+-Remove mitochondrial reads
+-Mark PCR duplicates using Picard
+The script used:
+```bash
+while read sample; do
+  echo "samtools view -bh ${sample}.bam I II III IV V VI VII VIII IX X XI XII XIII XIV XV XVI > ${sample}_SC_subset.bam" \
+       "&& picard MarkDuplicates I=${sample}_SC_subset.bam O=${sample}_SC_subset_dedup.bam M=${sample}_markdup_metrics.txt" \
+       "&& samtools index ${sample}_SC_subset_dedup.bam" \
+       "&& samtools flagstat ${sample}_SC_subset_dedup.bam > ${sample}_SC_subset_dedup_map_stats.txt"
+done < ../raw_data/sample_ids.txt
+```
+
+
+
+
+
 
