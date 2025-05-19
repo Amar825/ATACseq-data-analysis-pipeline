@@ -1,6 +1,6 @@
 # ATAC-Seq Analysis: Yeast Hybridization Study
 
-This repository documents a full end-to-end ATAC-seq analysis performed on yeast (**Saccharomyces cerevisiae** and its hybrid with **S. uvarum**). The analysis includes data download, preprocessing, alignment, peak calling, differential accessibility analysis, and visualization — all done using bash, R, and open-source bioinformatics tools.
+This repository documents a full end-to-end ATAC-seq analysis performed on yeast (**Saccharomyces cerevisiae** and its hybrid with **S. uvarum**). The analysis includes data download, preprocessing, alignment, peak calling, and visualization — all done using bash, R, and open-source bioinformatics tools.
 
 ---
 ## Objectives
@@ -23,17 +23,7 @@ This project was designed as a learning workflow with real biological data, aimi
 
 ---
 
-## Directory Structure
 
-```bash
-raw_data/               # Raw FASTQ files
-raw_data/trimming/      # Trimmed reads
-ref_gen/                # Reference genomes + annotations
-mapping/                # BAM files, stats
-fastqc_initial/         # Raw read QC
-fastqc_trimming/        # Trimmed read QC
-diffbind/               # R-based peak comparison and visualization
-```
 
 ## Setup: Computing environment
 Using Conda for reproducibility. Create environments:
