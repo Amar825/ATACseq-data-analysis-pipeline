@@ -125,5 +125,9 @@ mkdir fastqc_trimming
 fastqc -t 2 *P.fastq.gz -o fastqc_trimming/
 multiqc .
 ```
+![Post trim QC](readme_files/posttrim_QC.png)
+- Only a small fraction of reads were removed — most were retained as high-quality paired reads.
+- Adapter contamination was fully eliminated.
+- Read length and base quality distributions improved across the board.
 
 
