@@ -99,4 +99,31 @@ multiqc .
 
 Trimming will be performed in the next step to remove these sequences and improve overall read quality.
 
+## Trimming
+We used Trimmomatic (v0.39) to trim adapters and low-quality bases from the raw paired-end FASTQ files.
+Use this loop to generate trimming commands for each sample listed in `sample_ids.txt`:
+```bash
+while read sample_id; do
+  echo trimmomatic PE -threads 2 \
+    ../${sample_id}_1.fastq.gz ../${sample_id}_2.fastq.gz \
+    ${sample_id}_tr_1P.fastq.gz ${sample_id}_tr_1U.fastq.gz \
+    ${sample_id}_tr_2P.fastq.gz ${sample_id}_tr_2U.fastq.gz \
+    ILLUMINACLIP:~/miniconda2/envs/atacseq/share/trimmomatic-0.39-2/adapters/NexteraPE-PE.fa:2:30:10 \
+    MINLEN:30
+done < ../sample_ids.txt > trimming_commands.txt
+```
+Now execute the command
+```bash
+bash trimming_commands.txt 1>trimming_output 2>trimming_error
+```
+This executes all trimming commands and logs output and errors to separate files.
+
+### Check trimming quality
+Run FastQC and MultiQC on the trimmed paired reads:
+```bash
+mkdir fastqc_trimming
+fastqc -t 2 *P.fastq.gz -o fastqc_trimming/
+multiqc .
+```
+
 
