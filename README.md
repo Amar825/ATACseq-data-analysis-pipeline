@@ -206,8 +206,20 @@ done < ../raw_data/sample_ids.txt > call_peaks_commands.txt
 ```
 Then executed: ```bash call_peaks_commands.txt```
 
+## Peak Visualisation
+To visualize the results of the ATAC-seq analysis — including alignments and called peaks — we used **Integrative Genomics Viewer (IGV)** v2.4.9. This step allows visual confirmation of successful peak calling and inspection of chromatin accessibility patterns across the genome.
+### Files visualized:
 
+- Deduplicated BAM file: `SRR10261591_SC_subset_dedup.bam`
+- Reference genome: `S_cerevisiae_masked_rRNA.fasta`
+- Gene annotation (GTF): `Saccharomyces_cerevisiae.R64-1-1.106.gtf`
+- MACS2 peaks: `SRR10261591_peak_peaks.narrowPeak`
+- Peak summits: `SRR10261591_peak_summits.bed`
 
+Launch IGV by typing igv in your terminal.
+In IGV, we first loaded the reference genome from the file `S_cerevisiae_masked_rRNA.fasta` using the menu option `Genome > Load Genome from File`. Next, we loaded the gene annotation file `Saccharomyces_cerevisiae.R64-1-1.106.gtf` via `File > Load from File`. After loading the reference and annotation, we added the deduplicated alignment file `SRR10261591_SC_subset_dedup.bam`. Finally, we loaded the MACS2 output files `SRR10261591_peak_peaks.narrowPeak` and `SRR10261591_peak_summits.bed` as separate tracks. These files were rendered together in IGV, allowing simultaneous visualization of coverage, aligned reads, annotated genes, peak regions, and summit positions. This integrated view provided a useful confirmation that the called peaks aligned with biologically plausible, accessible genomic regions.
 
+![IGV_peaks](readme_files/IGV_peaks.png)
+In the visualization, one clear example includes an intergenic peak (visible in dark blue) whose summit aligns precisely with a region of elevated coverage in the BAM file. This peak is situated between the genes AAC3 and RPL19A and likely corresponds to a regulatory element such as a transcription factor binding site or promoter region. IGV enables this type of integrated analysis by allowing simultaneous viewing of aligned reads, coverage profiles, gene annotations, and peak calls. It supports a variety of input formats, including BAM, BED, GTF, and reference FASTA files, and is well-suited for exploring ATAC-seq data in detail.
 
 
