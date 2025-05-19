@@ -191,6 +191,20 @@ while read sample; do
        "&& samtools flagstat ${sample}_SC_subset_dedup.bam > ${sample}_SC_subset_dedup_map_stats.txt"
 done < ../raw_data/sample_ids.txt
 ```
+## Peak Calling
+With the deduplicated BAM files prepared, we performed ATAC-seq peak calling using **MACS2** (v2.2.7.1). MACS2 identifies genomic regions that are significantly enriched with reads — in this case, regions of open chromatin accessible to the Tn5 transposase.
+---
+
+### MACS2 Script
+
+We generated per-sample peak calling commands using the following script:
+
+```bash
+while read sample; do
+  echo "macs2 callpeak -t ${sample}_SC_subset_dedup.bam -f BAMPE -n ${sample}_peak -g 12000000 --keep-dup all"
+done < ../raw_data/sample_ids.txt > call_peaks_commands.txt
+```
+Then executed: ```bash call_peaks_commands.txt```
 
 
 
